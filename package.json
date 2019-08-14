@@ -2,9 +2,11 @@
   "name": "passthroughbuffertoggle",
   "version": "1.0.0",
   "description": "RxJS operator like bufferToggle but allows events to pass through when no buffer is open",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "karma start"
+    "test": "karma start",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
