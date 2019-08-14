@@ -1,5 +1,6 @@
 # PassThroughBufferToggle
 RxJS operator passThroughBufferToggle.
+Current supported RxJS version: 5.x.
 
 ## Description
 Works like bufferToggle operator but when there is no buffer open, values pass straight through this
