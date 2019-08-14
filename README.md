@@ -16,7 +16,12 @@ The author took a heavy inspiration from bufferToggle.ts in RxJS source. It's ac
 with some minor modifications. We will be contributing this to RxJS project if they want to take it and at
 the very least will be publishing this operator to npm.
 
+## Package
+https://www.npmjs.com/package/passthroughbuffertoggle
+
 ## Usage
+
+`npm install passthroughbuffertoggle`
 
 ```typescript
 import { interval } from 'rxjs';
