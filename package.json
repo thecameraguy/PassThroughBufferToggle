@@ -4,7 +4,7 @@
   "description": "RxJS operator like bufferToggle but allows events to pass through when no buffer is open",
   "main": "index.ts",
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start"
+    "test": "karma start"
   },
   "repository": {
     "type": "git",
