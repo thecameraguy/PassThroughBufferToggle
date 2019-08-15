@@ -1,5 +1,5 @@
 import 'jasmine';
-import { Observable, Subject, pipe } from 'rxjs';
+import { Subject } from 'rxjs';
 import { passThroughBufferToggle } from './pass-through-buffer-toggle';
 
 describe('passThroughBufferToggle', () => {
