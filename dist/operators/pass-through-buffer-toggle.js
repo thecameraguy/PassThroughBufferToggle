@@ -10,9 +10,10 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Subscription_1 = require("rxjs/Subscription");
-var OuterSubscriber_1 = require("rxjs/OuterSubscriber");
-var subscribeToResult_1 = require("rxjs/util/subscribeToResult");
+var Observable_1 = require("rxjs/internal/Observable");
+var Subscription_1 = require("rxjs/internal/Subscription");
+var subscribeToResult_1 = require("rxjs/internal/util/subscribeToResult");
+var OuterSubscriber_1 = require("rxjs/internal/OuterSubscriber");
 /**
  * A pass-through toggle-able buffer.
  *
@@ -31,75 +32,78 @@ var subscribeToResult_1 = require("rxjs/util/subscribeToResult");
  * if they want to take it and at the very least will be publishing this operator to npm.
  */
 function passThroughBufferToggle(openings, closingSelector) {
-    return this.lift(new PassThroughBufferToggleOperator(openings, closingSelector));
+    return function bufferToggleOperatorFunction(source) {
+        return source.lift(new BufferToggleOperator(openings, closingSelector));
+    };
 }
 exports.passThroughBufferToggle = passThroughBufferToggle;
-var PassThroughBufferToggleOperator = /** @class */ (function () {
-    function PassThroughBufferToggleOperator(openings, closingSelector) {
+var BufferToggleOperator = /** @class */ (function () {
+    function BufferToggleOperator(openings, closingSelector) {
         this.openings = openings;
         this.closingSelector = closingSelector;
     }
-    PassThroughBufferToggleOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new PassThroughBufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
+    BufferToggleOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new BufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
     };
-    return PassThroughBufferToggleOperator;
+    return BufferToggleOperator;
 }());
-var PassThroughBufferToggleSubscriber = /** @class */ (function (_super) {
-    __extends(PassThroughBufferToggleSubscriber, _super);
-    function PassThroughBufferToggleSubscriber(destination, openings, closingSelector) {
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var BufferToggleSubscriber = /** @class */ (function (_super) {
+    __extends(BufferToggleSubscriber, _super);
+    function BufferToggleSubscriber(destination, openings, closingSelector) {
         var _this = _super.call(this, destination) || this;
-        _this.destination = destination;
         _this.openings = openings;
         _this.closingSelector = closingSelector;
         _this.contexts = [];
         _this.add(subscribeToResult_1.subscribeToResult(_this, openings));
         return _this;
     }
-    PassThroughBufferToggleSubscriber.prototype.notifyNext = function (outerValue, innerValue, outerIndex, innerIndex, innerSubscriber) {
-        outerValue ? this.closeBuffer(outerValue) : this.openBuffer(innerValue);
-    };
-    PassThroughBufferToggleSubscriber.prototype.notifyComplete = function (innerSubscriber) {
-        this.closeBuffer(innerSubscriber.context);
-    };
-    PassThroughBufferToggleSubscriber.prototype._next = function (value) {
+    BufferToggleSubscriber.prototype._next = function (value) {
         var contexts = this.contexts;
         var len = contexts.length;
-        // Any buffers open? Start collecting the values;
         if (len > 0) {
-            for (var i = 0; i < len; ++i) {
+            for (var i = 0; i < len; i++) {
                 contexts[i].buffer.push(value);
             }
-            // All buffers are closed. Let the values through.
         }
         else {
             this.destination.next([value]);
         }
     };
-    PassThroughBufferToggleSubscriber.prototype._error = function (err) {
+    BufferToggleSubscriber.prototype._error = function (err) {
         var contexts = this.contexts;
         while (contexts.length > 0) {
             var context = contexts.shift();
-            this.clearContext(context);
+            context.subscription.unsubscribe();
+            context.buffer = null;
+            context.subscription = null;
         }
         this.contexts = null;
         _super.prototype._error.call(this, err);
     };
-    PassThroughBufferToggleSubscriber.prototype._complete = function () {
+    BufferToggleSubscriber.prototype._complete = function () {
         var contexts = this.contexts;
         while (contexts.length > 0) {
             var context = contexts.shift();
             this.destination.next(context.buffer);
-            this.clearContext(context);
+            context.subscription.unsubscribe();
+            context.buffer = null;
+            context.subscription = null;
         }
         this.contexts = null;
         _super.prototype._complete.call(this);
     };
-    PassThroughBufferToggleSubscriber.prototype.clearContext = function (context) {
-        context.subscription.unsubscribe();
-        context.buffer = null;
-        context.subscription = null;
+    BufferToggleSubscriber.prototype.notifyNext = function (outerValue, innerValue, outerIndex, innerIndex, innerSub) {
+        outerValue ? this.closeBuffer(outerValue) : this.openBuffer(innerValue);
     };
-    PassThroughBufferToggleSubscriber.prototype.openBuffer = function (value) {
+    BufferToggleSubscriber.prototype.notifyComplete = function (innerSub) {
+        this.closeBuffer(innerSub.context);
+    };
+    BufferToggleSubscriber.prototype.openBuffer = function (value) {
         try {
             var closingSelector = this.closingSelector;
             var closingNotifier = closingSelector.call(this, value);
@@ -107,11 +111,11 @@ var PassThroughBufferToggleSubscriber = /** @class */ (function (_super) {
                 this.trySubscribe(closingNotifier);
             }
         }
-        catch (error) {
-            this._error(error);
+        catch (err) {
+            this._error(err);
         }
     };
-    PassThroughBufferToggleSubscriber.prototype.closeBuffer = function (context) {
+    BufferToggleSubscriber.prototype.closeBuffer = function (context) {
         var contexts = this.contexts;
         if (contexts && context) {
             var buffer = context.buffer, subscription = context.subscription;
@@ -121,7 +125,7 @@ var PassThroughBufferToggleSubscriber = /** @class */ (function (_super) {
             subscription.unsubscribe();
         }
     };
-    PassThroughBufferToggleSubscriber.prototype.trySubscribe = function (closingNotifier) {
+    BufferToggleSubscriber.prototype.trySubscribe = function (closingNotifier) {
         var contexts = this.contexts;
         var buffer = [];
         var subscription = new Subscription_1.Subscription();
@@ -137,6 +141,7 @@ var PassThroughBufferToggleSubscriber = /** @class */ (function (_super) {
             subscription.add(innerSubscription);
         }
     };
-    return PassThroughBufferToggleSubscriber;
+    return BufferToggleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
+Observable_1.Observable.prototype.passThroughBufferToggle = passThroughBufferToggle;
 //# sourceMappingURL=pass-through-buffer-toggle.js.map

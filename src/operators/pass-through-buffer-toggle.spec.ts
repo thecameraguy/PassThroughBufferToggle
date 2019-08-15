@@ -1,18 +1,6 @@
 import 'jasmine';
-import { Observable, Subject } from 'rxjs/Rx';
+import { Observable, Subject, pipe } from 'rxjs';
 import { passThroughBufferToggle } from './pass-through-buffer-toggle';
-
-// Patch Observable with the new operator
-(<any> Observable).prototype.passThroughBufferToggle = passThroughBufferToggle;
-(<any> Observable).prototype._passThroughBufferToggle = passThroughBufferToggle;
-// Merge rxjs/Rx Observable interface to include the new operator
-declare module 'rxjs/Observable' {
-    // tslint:disable-next-line:no-shadowed-variable
-    interface Observable<T> {
-        passThroughBufferToggle: typeof passThroughBufferToggle;
-        _passThroughBufferToggle: typeof passThroughBufferToggle;
-    }
-}
 
 describe('passThroughBufferToggle', () => {
     let inputStream$: Subject<number>;
@@ -34,8 +22,9 @@ describe('passThroughBufferToggle', () => {
 
     it('should emit values immediately when no buffer is open', () => {
         let emitted: number[] = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(
+                passThroughBufferToggle(openings$, closingSelector)
+            )
             .subscribe((value: number[]) => {
                 emitted = emitted.concat(value);
             });
@@ -52,8 +41,9 @@ describe('passThroughBufferToggle', () => {
     });
     it('should not emit values when one buffer is open', () => {
         let emitted: number[] = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(
+                passThroughBufferToggle(openings$, closingSelector)
+            )
             .subscribe((value: number[]) => {
                 emitted = emitted.concat(value);
             });
@@ -71,8 +61,9 @@ describe('passThroughBufferToggle', () => {
     });
     it('should not emit values when more than one buffer is open', () => {
         let emitted: number[] = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(
+                passThroughBufferToggle(openings$, closingSelector)
+            )
             .subscribe((value: number[]) => {
                 emitted = emitted.concat(value);
             });
@@ -97,8 +88,9 @@ describe('passThroughBufferToggle', () => {
     });
     it('should emit all buffered values when buffers are closed', () => {
         let emitted: number[] = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(
+                passThroughBufferToggle(openings$, closingSelector)
+            )
             .subscribe((value: number[]) => {
                 emitted = emitted.concat(value);
             });
@@ -127,8 +119,9 @@ describe('passThroughBufferToggle', () => {
     });
     it('should continue emitting values when buffers are closed', () => {
         let emitted: number[] = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(
+                passThroughBufferToggle(openings$, closingSelector)
+            )
             .subscribe((value: number[]) => {
                 emitted = emitted.concat(value);
             });
