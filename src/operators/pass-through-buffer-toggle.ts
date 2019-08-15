@@ -151,5 +151,3 @@ class PassThroughBufferToggleSubscriber<T, O> extends OuterSubscriber<T, O> {
         }
     }
 }
-
-(<any>Observable).prototype.passThroughBufferToggle = passThroughBufferToggle;

@@ -10,7 +10,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Observable_1 = require("rxjs/internal/Observable");
 var Subscription_1 = require("rxjs/internal/Subscription");
 var subscribeToResult_1 = require("rxjs/internal/util/subscribeToResult");
 var OuterSubscriber_1 = require("rxjs/internal/OuterSubscriber");
@@ -32,29 +31,24 @@ var OuterSubscriber_1 = require("rxjs/internal/OuterSubscriber");
  * if they want to take it and at the very least will be publishing this operator to npm.
  */
 function passThroughBufferToggle(openings, closingSelector) {
-    return function bufferToggleOperatorFunction(source) {
-        return source.lift(new BufferToggleOperator(openings, closingSelector));
+    return function passThroughBufferToggleOperatorFunction(source) {
+        return source.lift(new PassThroughBufferToggleOperator(openings, closingSelector));
     };
 }
 exports.passThroughBufferToggle = passThroughBufferToggle;
-var BufferToggleOperator = /** @class */ (function () {
-    function BufferToggleOperator(openings, closingSelector) {
+var PassThroughBufferToggleOperator = /** @class */ (function () {
+    function PassThroughBufferToggleOperator(openings, closingSelector) {
         this.openings = openings;
         this.closingSelector = closingSelector;
     }
-    BufferToggleOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new BufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
+    PassThroughBufferToggleOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new PassThroughBufferToggleSubscriber(subscriber, this.openings, this.closingSelector));
     };
-    return BufferToggleOperator;
+    return PassThroughBufferToggleOperator;
 }());
-/**
- * We need this JSDoc comment for affecting ESDoc.
- * @ignore
- * @extends {Ignored}
- */
-var BufferToggleSubscriber = /** @class */ (function (_super) {
-    __extends(BufferToggleSubscriber, _super);
-    function BufferToggleSubscriber(destination, openings, closingSelector) {
+var PassThroughBufferToggleSubscriber = /** @class */ (function (_super) {
+    __extends(PassThroughBufferToggleSubscriber, _super);
+    function PassThroughBufferToggleSubscriber(destination, openings, closingSelector) {
         var _this = _super.call(this, destination) || this;
         _this.openings = openings;
         _this.closingSelector = closingSelector;
@@ -62,7 +56,7 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
         _this.add(subscribeToResult_1.subscribeToResult(_this, openings));
         return _this;
     }
-    BufferToggleSubscriber.prototype._next = function (value) {
+    PassThroughBufferToggleSubscriber.prototype._next = function (value) {
         var contexts = this.contexts;
         var len = contexts.length;
         if (len > 0) {
@@ -74,7 +68,7 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
             this.destination.next([value]);
         }
     };
-    BufferToggleSubscriber.prototype._error = function (err) {
+    PassThroughBufferToggleSubscriber.prototype._error = function (err) {
         var contexts = this.contexts;
         while (contexts.length > 0) {
             var context = contexts.shift();
@@ -85,7 +79,7 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
         this.contexts = null;
         _super.prototype._error.call(this, err);
     };
-    BufferToggleSubscriber.prototype._complete = function () {
+    PassThroughBufferToggleSubscriber.prototype._complete = function () {
         var contexts = this.contexts;
         while (contexts.length > 0) {
             var context = contexts.shift();
@@ -97,13 +91,13 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
         this.contexts = null;
         _super.prototype._complete.call(this);
     };
-    BufferToggleSubscriber.prototype.notifyNext = function (outerValue, innerValue, outerIndex, innerIndex, innerSub) {
+    PassThroughBufferToggleSubscriber.prototype.notifyNext = function (outerValue, innerValue, outerIndex, innerIndex, innerSub) {
         outerValue ? this.closeBuffer(outerValue) : this.openBuffer(innerValue);
     };
-    BufferToggleSubscriber.prototype.notifyComplete = function (innerSub) {
+    PassThroughBufferToggleSubscriber.prototype.notifyComplete = function (innerSub) {
         this.closeBuffer(innerSub.context);
     };
-    BufferToggleSubscriber.prototype.openBuffer = function (value) {
+    PassThroughBufferToggleSubscriber.prototype.openBuffer = function (value) {
         try {
             var closingSelector = this.closingSelector;
             var closingNotifier = closingSelector.call(this, value);
@@ -115,7 +109,7 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
             this._error(err);
         }
     };
-    BufferToggleSubscriber.prototype.closeBuffer = function (context) {
+    PassThroughBufferToggleSubscriber.prototype.closeBuffer = function (context) {
         var contexts = this.contexts;
         if (contexts && context) {
             var buffer = context.buffer, subscription = context.subscription;
@@ -125,7 +119,7 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
             subscription.unsubscribe();
         }
     };
-    BufferToggleSubscriber.prototype.trySubscribe = function (closingNotifier) {
+    PassThroughBufferToggleSubscriber.prototype.trySubscribe = function (closingNotifier) {
         var contexts = this.contexts;
         var buffer = [];
         var subscription = new Subscription_1.Subscription();
@@ -141,7 +135,6 @@ var BufferToggleSubscriber = /** @class */ (function (_super) {
             subscription.add(innerSubscription);
         }
     };
-    return BufferToggleSubscriber;
+    return PassThroughBufferToggleSubscriber;
 }(OuterSubscriber_1.OuterSubscriber));
-Observable_1.Observable.prototype.passThroughBufferToggle = passThroughBufferToggle;
 //# sourceMappingURL=pass-through-buffer-toggle.js.map
