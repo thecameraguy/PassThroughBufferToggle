@@ -1,6 +1,6 @@
 {
   "name": "pass-through-buffer-toggle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "RxJS operator like bufferToggle but allows events to pass through when no buffer is open",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

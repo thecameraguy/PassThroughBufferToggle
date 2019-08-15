@@ -25,7 +25,7 @@ https://www.npmjs.com/package/pass-through-buffer-toggle
 
 ```typescript
 import { interval } from 'rxjs';
-import 'pass-through-buffer-toggle/dist/add/pass-through-buffer-toggle';
+import 'pass-through-buffer-toggle/dist/add/operators/pass-through-buffer-toggle';
 
 // emit every second
 const sourceInterval = interval (1000);
