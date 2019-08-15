@@ -17,15 +17,15 @@ with some minor modifications. We will be contributing this to RxJS project if t
 the very least will be publishing this operator to npm.
 
 ## Package
-https://www.npmjs.com/package/passthroughbuffertoggle
+https://www.npmjs.com/package/pass-through-buffer-toggle
 
 ## Usage
 
-`npm install passthroughbuffertoggle`
+`npm install pass-through-buffer-toggle`
 
 ```typescript
 import { interval } from 'rxjs';
-import 'passthroughbuffertoggle/add/pass-through-buffer-toggle';
+import 'pass-through-buffer-toggle/add/pass-through-buffer-toggle';
 
 // emit every second
 const sourceInterval = interval (1000);
