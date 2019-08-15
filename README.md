@@ -2,10 +2,10 @@
 
 RxJS operator passThroughBufferToggle.
 
-Current supported RxJS version:
+Current supported RxJS versions:
 
-* 6.x (v2.0.x)
-* 5.x (v1.0.x)
+* 6.x (pass-through-buffer-toggle v2.0.x)
+* 5.x (pass-through-buffer-toggle v1.0.x)
 
 ## Description
 
