@@ -1,4 +1,4 @@
-import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
+import { OperatorFunction, SubscribableOrPromise } from 'rxjs/internal/types';
 /**
  * A pass-through toggle-able buffer.
  *
@@ -16,4 +16,4 @@ import { Observable, SubscribableOrPromise } from 'rxjs/Observable';
  * bufferToggle with some minor modifications. We will be contributing this to RxJS project
  * if they want to take it and at the very least will be publishing this operator to npm.
  */
-export declare function passThroughBufferToggle<T, O>(openings: SubscribableOrPromise<O>, closingSelector: (value: O) => SubscribableOrPromise<any>): Observable<T[]>;
+export declare function passThroughBufferToggle<T, O>(openings: SubscribableOrPromise<O>, closingSelector: (value: O) => SubscribableOrPromise<any>): OperatorFunction<T, T[]>;

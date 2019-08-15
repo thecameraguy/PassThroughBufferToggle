@@ -1,11 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("jasmine");
-var Rx_1 = require("rxjs/Rx");
+var rxjs_1 = require("rxjs");
 var pass_through_buffer_toggle_1 = require("./pass-through-buffer-toggle");
-// Patch Observable with the new operator
-Rx_1.Observable.prototype.passThroughBufferToggle = pass_through_buffer_toggle_1.passThroughBufferToggle;
-Rx_1.Observable.prototype._passThroughBufferToggle = pass_through_buffer_toggle_1.passThroughBufferToggle;
 describe('passThroughBufferToggle', function () {
     var inputStream$;
     var openings$;
@@ -13,9 +10,9 @@ describe('passThroughBufferToggle', function () {
     var closingSelector;
     beforeEach(function () {
         jasmine.clock().install();
-        inputStream$ = new Rx_1.Subject();
-        openings$ = new Rx_1.Subject();
-        closings$ = new Rx_1.Subject();
+        inputStream$ = new rxjs_1.Subject();
+        openings$ = new rxjs_1.Subject();
+        closings$ = new rxjs_1.Subject();
         closingSelector = createClosingSelector(closings$);
     });
     afterEach(function () {
@@ -23,8 +20,7 @@ describe('passThroughBufferToggle', function () {
     });
     it('should emit values immediately when no buffer is open', function () {
         var emitted = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(pass_through_buffer_toggle_1.passThroughBufferToggle(openings$, closingSelector))
             .subscribe(function (value) {
             emitted = emitted.concat(value);
         });
@@ -38,8 +34,7 @@ describe('passThroughBufferToggle', function () {
     });
     it('should not emit values when one buffer is open', function () {
         var emitted = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(pass_through_buffer_toggle_1.passThroughBufferToggle(openings$, closingSelector))
             .subscribe(function (value) {
             emitted = emitted.concat(value);
         });
@@ -53,8 +48,7 @@ describe('passThroughBufferToggle', function () {
     });
     it('should not emit values when more than one buffer is open', function () {
         var emitted = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(pass_through_buffer_toggle_1.passThroughBufferToggle(openings$, closingSelector))
             .subscribe(function (value) {
             emitted = emitted.concat(value);
         });
@@ -73,8 +67,7 @@ describe('passThroughBufferToggle', function () {
     });
     it('should emit all buffered values when buffers are closed', function () {
         var emitted = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(pass_through_buffer_toggle_1.passThroughBufferToggle(openings$, closingSelector))
             .subscribe(function (value) {
             emitted = emitted.concat(value);
         });
@@ -95,8 +88,7 @@ describe('passThroughBufferToggle', function () {
     });
     it('should continue emitting values when buffers are closed', function () {
         var emitted = [];
-        inputStream$
-            .passThroughBufferToggle(openings$, closingSelector)
+        inputStream$.pipe(pass_through_buffer_toggle_1.passThroughBufferToggle(openings$, closingSelector))
             .subscribe(function (value) {
             emitted = emitted.concat(value);
         });
